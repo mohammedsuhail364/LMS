@@ -28,6 +28,10 @@ mongoose
     .then(() => console.log("mongodb is connected successfully"))
     .catch((e)=>console.log(e));
 
+// routes configuration
+
+
+
 app.listen(PORT,()=>{
     console.log(`Server is now running on port ${PORT}`);
     
