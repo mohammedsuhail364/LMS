@@ -20,6 +20,8 @@ function AuthPage() {
     setSignInFormData,
     signUpFormData,
     setSignUpFormData,
+    handleRegisterUser,
+    handleLoginUser
   } = useContext(AuthContext);
   function handleTabChange(value) {
     setActiveTab(value);
@@ -37,7 +39,7 @@ function AuthPage() {
       signUpFormData &&
       signUpFormData.userEmail !== "" &&
       signUpFormData.password !== "" &&
-      signUpFormData.userName!==""
+      signUpFormData.userName !== ""
     );
   }
   return (
@@ -75,6 +77,7 @@ function AuthPage() {
                   formData={signInFormData}
                   setFormData={setSignInFormData}
                   isButtonDisabled={!checkIfSignInFormIsValid()}
+                  handleSubmit={handleLoginUser}
                 />
               </CardContent>
             </Card>
@@ -94,6 +97,7 @@ function AuthPage() {
                   formData={signUpFormData}
                   setFormData={setSignUpFormData}
                   isButtonDisabled={!checkIfSignUpFormIsValid()}
+                  handleSubmit={handleRegisterUser}
                 />
               </CardContent>
             </Card>
