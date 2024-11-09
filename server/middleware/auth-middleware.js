@@ -3,7 +3,7 @@ const verifyToken=(token,secretKey)=>{
     return jwt.verify(token,secretKey)
 }
 const authenticate=(req,res,next)=>{
-    const authHeader=req.headers.authorizations;
+    const authHeader=req.headers.authorization;
     if(!authHeader){
         return res.status(401).json({
             success:false,

@@ -23,9 +23,11 @@ export async function loginService(formData) {
     throw error;
   }
 }
-export async function checkAuth() {
+export async function checkAuthService() {
   try {
-    const { data } = await axiosInstance.get("/auth/check-auth", {});
+    const { data } = await axiosInstance.get("/auth/check-auth");
+    
+    
     return data;
   } catch (error) {
     console.log("Error in registerService:", error.message || error);
