@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const authRoutes = require("./routes/auth-routes");
+const mediaRoutes = require("./routes/instructor-routes/mediaRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -32,6 +33,7 @@ mongoose
 // routes configuration
 
 app.use('/auth',authRoutes)
+app.use('/media',mediaRoutes)
 
 
 app.listen(PORT,()=>{
