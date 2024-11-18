@@ -1,18 +1,24 @@
+import MediaProgressbar from "@/components/media-progress-tracking";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import VideoPlayer from "@/components/video-player";
 import { courseCurriculumInitialFormData } from "@/config";
 import { InstructorContext } from "@/context/instructor-context";
 import { mediaUploadService } from "@/services";
 import { useContext } from "react";
 
 function CourseCurriculam() {
-  const { courseCurriculamFormData, setCourseCurriculamFormData } =
-    useContext(InstructorContext);
-  const { mediaUploadProgress, setMediaUploadProgress } =
-    useContext(InstructorContext);
+  const {
+    courseCurriculamFormData,
+    setCourseCurriculamFormData,
+    mediaUploadProgressPercentage,
+    setMediaUploadProgressPercentage,
+    mediaUploadProgress,
+    setMediaUploadProgress,
+  } = useContext(InstructorContext);
 
   const handleNewLecture = () => {
     setCourseCurriculamFormData([
@@ -49,7 +55,10 @@ function CourseCurriculam() {
 
       try {
         setMediaUploadProgress(true);
-        const response = await mediaUploadService(videoFormData);
+        const response = await mediaUploadService(
+          videoFormData,
+          setMediaUploadProgressPercentage
+        );
         if (response.success) {
           let copyCourseCurriculamFormData = [...courseCurriculamFormData];
           copyCourseCurriculamFormData[currentIndex] = {
@@ -66,7 +75,9 @@ function CourseCurriculam() {
     }
   }
   console.log(courseCurriculamFormData);
-  
+  console.log("Uploading:", mediaUploadProgress);
+  console.log("Progress Percentage:", mediaUploadProgressPercentage);
+
   return (
     <Card>
       <CardHeader>
@@ -74,6 +85,12 @@ function CourseCurriculam() {
       </CardHeader>
       <CardContent>
         <Button onClick={handleNewLecture}>Add Lecture</Button>
+        {mediaUploadProgress ? (
+          <MediaProgressbar
+            isMediaUploading={mediaUploadProgress}
+            progress={mediaUploadProgressPercentage}
+          />
+        ) : null}
         <div className=" mt-4 space-y-4">
           {courseCurriculamFormData.map((curriculamItem, index) => (
             <div key={index} className=" border p-5 rounded-md">
@@ -101,12 +118,22 @@ function CourseCurriculam() {
                 </div>
               </div>
               <div className=" mt-6">
-                <Input
-                  type="file"
-                  accept="video/*"
-                  onChange={(event) => handleSingleLectureUpload(event, index)}
-                  className="mb-4"
-                />
+                {courseCurriculamFormData[index].videoUrl ? (
+                  <div className="flex gap-3">
+                    <VideoPlayer url={courseCurriculamFormData[index].videoUrl} />
+                    <Button>Replace Video</Button>
+                    <Button className="bg-red-900">Delete Lecture</Button>
+                  </div>
+                ) : (
+                  <Input
+                    type="file"
+                    accept="video/*"
+                    onChange={(event) =>
+                      handleSingleLectureUpload(event, index)
+                    }
+                    className="mb-4"
+                  />
+                )}
               </div>
             </div>
           ))}
