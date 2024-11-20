@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import VideoPlayer from "@/components/video-player";
 import { courseCurriculumInitialFormData } from "@/config";
 import { InstructorContext } from "@/context/instructor-context";
-import { mediaUploadService } from "@/services";
+import { mediaDeleteService, mediaUploadService } from "@/services";
 import { useContext } from "react";
 
 function CourseCurriculam() {
@@ -74,17 +74,50 @@ function CourseCurriculam() {
       }
     }
   }
-  console.log(courseCurriculamFormData);
-  console.log("Uploading:", mediaUploadProgress);
-  console.log("Progress Percentage:", mediaUploadProgressPercentage);
-
+  // console.log(courseCurriculamFormData);
+  // console.log("Uploading:", mediaUploadProgress);
+  // console.log("Progress Percentage:", mediaUploadProgressPercentage);
+  function isCourseCurriculamFormDataValid() {
+    return courseCurriculamFormData.every((item) => {
+      return (
+        item &&
+        typeof item === "object" &&
+        item.title.trim() !== "" &&
+        item.videoUrl.trim() !== ""
+      );
+    });
+  }
+  async function handleReplaceVideo(currentIndex) {
+    let copyCourseCurriculamFormData = [...courseCurriculamFormData];
+    const getCurrentVideoPublicId =
+      copyCourseCurriculamFormData[currentIndex].public_id;
+    const deleteCurrentMediaResponse = await mediaDeleteService(
+      getCurrentVideoPublicId
+    );
+    // console.log(deleteCurrentMediaResponse);
+    if (deleteCurrentMediaResponse.success) {
+      copyCourseCurriculamFormData[currentIndex] = {
+        ...copyCourseCurriculamFormData[currentIndex],
+        videoUrl: "",
+        public_id: "",
+      };
+    }
+    setCourseCurriculamFormData(copyCourseCurriculamFormData);
+  }
+  // console.log(courseCurriculamFormData);
+  
   return (
     <Card>
       <CardHeader>
         <CardTitle>Create Course Curriculam</CardTitle>
       </CardHeader>
       <CardContent>
-        <Button onClick={handleNewLecture}>Add Lecture</Button>
+        <Button
+          disabled={!isCourseCurriculamFormDataValid() || mediaUploadProgress}
+          onClick={handleNewLecture}
+        >
+          Add Lecture
+        </Button>
         {mediaUploadProgress ? (
           <MediaProgressbar
             isMediaUploading={mediaUploadProgress}
@@ -120,8 +153,14 @@ function CourseCurriculam() {
               <div className=" mt-6">
                 {courseCurriculamFormData[index].videoUrl ? (
                   <div className="flex gap-3">
-                    <VideoPlayer url={courseCurriculamFormData[index].videoUrl} />
-                    <Button>Replace Video</Button>
+                    <VideoPlayer
+                      url={courseCurriculamFormData[index].videoUrl}
+                      width="450px"
+                      height="200px"
+                    />
+                    <Button onClick={() => handleReplaceVideo(index)}>
+                      Replace Video
+                    </Button>
                     <Button className="bg-red-900">Delete Lecture</Button>
                   </div>
                 ) : (

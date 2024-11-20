@@ -39,9 +39,16 @@ export async function mediaUploadService(formData, onProgressCallback) {
       "Content-Type": "multipart/form-data",
     },
     onUploadProgress: (progressEvent) => {
-      const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+      const percentCompleted = Math.round(
+        (progressEvent.loaded * 100) / progressEvent.total
+      );
       onProgressCallback(percentCompleted); // Pass the calculated percentage to the callback
     },
   });
+  return data;
+}
+export async function mediaDeleteService(id) {
+  const { data } = await axiosInstance.delete(`/media/delete/${id}`, id);
+
   return data;
 }
