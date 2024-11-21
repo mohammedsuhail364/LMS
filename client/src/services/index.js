@@ -52,3 +52,16 @@ export async function mediaDeleteService(id) {
 
   return data;
 }
+
+export async function fetchInstructorCourseListService() {
+  
+}
+export async function addNewCourseService() {
+  
+}
+export async function fetchInstructorCourseDetailsService() {
+  
+}
+export async function updateCourseByIdService() {
+  
+}
