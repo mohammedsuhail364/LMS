@@ -54,14 +54,36 @@ export async function mediaDeleteService(id) {
 }
 
 export async function fetchInstructorCourseListService() {
-  
+  const { data } = await axiosInstance.get(`/instructor/course/get`);
+
+  return data;
 }
-export async function addNewCourseService() {
-  
+export async function addNewCourseService(formData) {
+  const { data } = await axiosInstance.post(`/instructor/course/add`,formData);
+
+  return data;
 }
-export async function fetchInstructorCourseDetailsService() {
-  
+export async function fetchInstructorCourseDetailsService(id) {
+  const { data } = await axiosInstance.get(`/instructor/course/get/details/${id}`, id);
+
+  return data;
 }
-export async function updateCourseByIdService() {
-  
+export async function updateCourseByIdService(id,formData) {
+  const { data } = await axiosInstance.put(`/instructor/course/update/${id}`, formData);
+
+  return data;
+}
+export async function mediaBulkUploadService(formData, onProgressCallback) {
+  const { data } = await axiosInstance.post("/media/bulk-upload", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    onUploadProgress: (progressEvent) => {
+      const percentCompleted = Math.round(
+        (progressEvent.loaded * 100) / progressEvent.total
+      );
+      onProgressCallback(percentCompleted); // Pass the calculated percentage to the callback
+    },
+  });
+  return data;
 }

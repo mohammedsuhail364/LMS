@@ -16,6 +16,8 @@ export default function InstructorProvider({ children }) {
     useState(0);
 
   const [mediaUploadProgress, setMediaUploadProgress] = useState(false);
+  const [instructorCoursesList, setInstructorCoursesList] = useState([])
+  const [currentEditedCourseId, setCurrentEditedCourseId] = useState(null);
   return (
     <InstructorContext.Provider
       value={{
@@ -27,6 +29,10 @@ export default function InstructorProvider({ children }) {
         setMediaUploadProgress,
         mediaUploadProgressPercentage,
         setMediaUploadProgressPercentage,
+        instructorCoursesList,
+        setInstructorCoursesList,
+        currentEditedCourseId,
+        setCurrentEditedCourseId
       }}
     >
       {children}
