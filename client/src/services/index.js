@@ -59,17 +59,23 @@ export async function fetchInstructorCourseListService() {
   return data;
 }
 export async function addNewCourseService(formData) {
-  const { data } = await axiosInstance.post(`/instructor/course/add`,formData);
+  const { data } = await axiosInstance.post(`/instructor/course/add`, formData);
 
   return data;
 }
 export async function fetchInstructorCourseDetailsService(id) {
-  const { data } = await axiosInstance.get(`/instructor/course/get/details/${id}`, id);
+  const { data } = await axiosInstance.get(
+    `/instructor/course/get/details/${id}`,
+    id
+  );
 
   return data;
 }
-export async function updateCourseByIdService(id,formData) {
-  const { data } = await axiosInstance.put(`/instructor/course/update/${id}`, formData);
+export async function updateCourseByIdService(id, formData) {
+  const { data } = await axiosInstance.put(
+    `/instructor/course/update/${id}`,
+    formData
+  );
 
   return data;
 }
@@ -85,5 +91,18 @@ export async function mediaBulkUploadService(formData, onProgressCallback) {
       onProgressCallback(percentCompleted); // Pass the calculated percentage to the callback
     },
   });
+  return data;
+}
+
+export async function fetchStudentViewCourseListService() {
+  const { data } = await axiosInstance.get(`/student/course/get`);
+
+  return data;
+}
+export async function fetchStudentViewCourseDetailsService(courseId) {
+  const { data } = await axiosInstance.get(
+    `/student/course/get/details/${courseId}`
+  );
+
   return data;
 }

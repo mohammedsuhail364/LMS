@@ -114,19 +114,19 @@ function CourseCurriculam() {
     bulkUploadInputRef.current.click();
   }
   function areAllCourseCurriculamFormDataObjectsEmpty(arr) {
-    return arr.every((obj)=>{
-      return Object.entries(obj).every(([key,value])=>{
-        if(typeof value==='boolean') return true
-        return value===''
-      })
-    })
+    return arr.every((obj) => {
+      return Object.entries(obj).every(([key, value]) => {
+        if (typeof value === "boolean") return true;
+        return value === "";
+      });
+    });
   }
   async function handleMediaBulkUpload(event) {
     const selectedFiles = Array.from(event.target.files);
     const bulkFormData = new FormData();
     selectedFiles.forEach((fileItem) => bulkFormData.append("files", fileItem));
-    console.log(bulkFormData,"bulk");
-    
+    console.log(bulkFormData, "bulk");
+
     try {
       setMediaUploadProgress(true);
       const response = await mediaBulkUploadService(
@@ -135,20 +135,35 @@ function CourseCurriculam() {
       );
       console.log(response);
       if (response.success) {
-        let copyCourseCurriculamFormData = areAllCourseCurriculamFormDataObjectsEmpty(courseCurriculamFormData)?[]:[...courseCurriculamFormData]
-        copyCourseCurriculamFormData=[...copyCourseCurriculamFormData,...response.data.map((item,index)=>({
-          videoUrl:item.url,
-          public_id:item.public_id,
-          title:`Lecture ${copyCourseCurriculamFormData.length+index}`,
-          freePreview:false
-        }))]
-        setCourseCurriculamFormData(copyCourseCurriculamFormData)
+        let copyCourseCurriculamFormData =
+          areAllCourseCurriculamFormDataObjectsEmpty(courseCurriculamFormData)
+            ? []
+            : [...courseCurriculamFormData];
+        copyCourseCurriculamFormData = [
+          ...copyCourseCurriculamFormData,
+          ...response.data.map((item, index) => ({
+            videoUrl: item.url,
+            public_id: item.public_id,
+            title: `Lecture ${copyCourseCurriculamFormData.length + (index+1)}`,
+            freePreview: false,
+          })),
+        ];
+        setCourseCurriculamFormData(copyCourseCurriculamFormData);
         setMediaUploadProgress(false);
       }
     } catch (error) {
       console.log(error);
     }
     console.log(selectedFiles);
+  }
+  async function handleDeleteLecture(currentIndex) {
+    let copyCourseCurriculamFormData=[...courseCurriculamFormData];
+    const getCurrentSelectedVideoPublicId=copyCourseCurriculamFormData[currentIndex].public_id;
+    const response=await mediaDeleteService(getCurrentSelectedVideoPublicId);
+    if(response.success){
+      copyCourseCurriculamFormData=copyCourseCurriculamFormData.filter((_,index)=>index!==currentIndex)
+      setCourseCurriculamFormData(copyCourseCurriculamFormData);
+    }
   }
   return (
     <Card>
@@ -226,7 +241,7 @@ function CourseCurriculam() {
                     <Button onClick={() => handleReplaceVideo(index)}>
                       Replace Video
                     </Button>
-                    <Button className="bg-red-900">Delete Lecture</Button>
+                    <Button className="bg-red-900" onClick={()=>handleDeleteLecture(index)}>Delete Lecture</Button>
                   </div>
                 ) : (
                   <Input

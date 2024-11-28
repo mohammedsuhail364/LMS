@@ -66,7 +66,7 @@ router.post('/bulk-upload',upload.array('files',10),async(req,res)=>{
    const uploadPromises=req.files.map(fileItem=>uploadMediaToCloudinary(fileItem.path))
    
    const results=await Promise.all(uploadPromises);
-   console.log(results);
+  //  console.log(results);
    res.status(200).json({
     success:true,
     data:results,

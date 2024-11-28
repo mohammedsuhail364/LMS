@@ -5,6 +5,9 @@ const mongoose = require("mongoose");
 const authRoutes = require("./routes/auth-routes");
 const mediaRoutes = require("./routes/instructor-routes/mediaRoutes");
 const instructorCourseRoutes = require("./routes/instructor-routes/courseRoutes");
+const getStudentViewCourseRoutes=require('./routes/student-routes/course-routes');
+
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -36,6 +39,8 @@ mongoose
 app.use('/auth',authRoutes)
 app.use('/media',mediaRoutes)
 app.use('/instructor/course',instructorCourseRoutes)
+app.use('/student/course',getStudentViewCourseRoutes);
+
 
 
 app.listen(PORT,()=>{
