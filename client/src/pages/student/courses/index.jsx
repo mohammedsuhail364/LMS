@@ -14,20 +14,69 @@ import { StudentContext } from "@/context/student-context";
 import { fetchStudentViewCourseListService } from "@/services";
 import { ArrowUpDownIcon } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 function StudentViewCoursesPage() {
-  const [sort, setSort] = useState("");
+  const [sort, setSort] = useState("price-lowtohigh");
+  const [filter, setFilter] = useState({});
+  const [searchParams, setSearchParams] = useSearchParams();
   const { studentViewCoursesList, setStudentViewCoursesList } =
     useContext(StudentContext);
-  function handleFilterOnChange() {}
+  function handleFilterOnChange(getSectionId, getCurrentOption) {
+    let copyFilters = { ...filter };
+    const indexOfCurrentSection =
+      Object.keys(copyFilters).indexOf(getSectionId);
+
+    if (indexOfCurrentSection === -1) {
+      // Add a new section with the current option
+      copyFilters[getSectionId] = [getCurrentOption.id];
+    } else {
+      const indexOfCurrentOption = copyFilters[getSectionId].indexOf(
+        getCurrentOption.id
+      );
+
+      if (indexOfCurrentOption === -1) {
+        // Add the option if not already selected
+        copyFilters[getSectionId] = [
+          ...copyFilters[getSectionId],
+          getCurrentOption.id,
+        ];
+      } else {
+        // Remove the option if it is already selected
+        copyFilters[getSectionId] = copyFilters[getSectionId].filter(
+          (id) => id !== getCurrentOption.id
+        );
+      }
+    }
+
+    // Update the state and session storage
+    setFilter(copyFilters);
+    sessionStorage.setItem("filters", JSON.stringify(copyFilters));
+  }
 
   async function fetchAllStudentViewCourses() {
     const response = await fetchStudentViewCourseListService();
     if (response.success) setStudentViewCoursesList(response.data);
   }
+  function createSearchParamsHelper(filterParams) {
+    const queryParams = [];
+    for (const [key, value] of Object.entries(filterParams)) {
+      if (Array.isArray(value) && value.length > 0) {
+        const paramValue = value.join(",");
+        queryParams.push(`${key}=${encodeURIComponent(paramValue)}`);
+      }
+    }
+    return queryParams.join("&");
+  }
+  useEffect(() => {
+    const buildQueryStringForFilters = createSearchParamsHelper(filter);
+    setSearchParams(new URLSearchParams(buildQueryStringForFilters));
+  }, [filter]);
   useEffect(() => {
     fetchAllStudentViewCourses();
   }, []);
+  console.log(filter);
+
   return (
     <div className=" container mx-auto p-4">
       <h1 className=" text-3xl font-bold mb-4">All Courses</h1>
@@ -44,9 +93,14 @@ function StudentViewCoursesPage() {
                       className="flex font-medium items-center gap-3"
                     >
                       <Checkbox
-                        checked={false}
+                        checked={
+                          filter &&
+                          Object.keys(filter).length > 0 &&
+                          filter[keyItem] &&
+                          filter[keyItem].indexOf(option.id) > -1
+                        }
                         onCheckedChange={() =>
-                          handleFilterOnChange(keyItem, option.id)
+                          handleFilterOnChange(keyItem, option)
                         }
                       />
                       {option.label}
@@ -95,7 +149,7 @@ function StudentViewCoursesPage() {
           <div className=" space-y-4">
             {studentViewCoursesList && studentViewCoursesList.length > 0 ? (
               studentViewCoursesList.map((courseItem) => (
-                <Card key={courseItem._id} className='cursor-pointer'>
+                <Card key={courseItem._id} className="cursor-pointer">
                   <CardContent className=" flex gap-4 p-4 ">
                     <div className=" w-48 h-32 flex-shrink-0">
                       <img
@@ -120,7 +174,9 @@ function StudentViewCoursesPage() {
                             : "Lectures"
                         } - ${courseItem.level.toUpperCase()} Level`}
                       </p>
-                      <p className=" font-bold text-lg">${courseItem.pricing} </p>
+                      <p className=" font-bold text-lg">
+                        ${courseItem.pricing}{" "}
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
