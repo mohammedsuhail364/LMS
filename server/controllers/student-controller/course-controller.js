@@ -38,13 +38,6 @@ const getAllStudentViewCourses = async (req, res) => {
         break;
     }
     const coursesList = await Course.find(filters).sort(sortParam);
-    if (coursesList.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "No Course found",
-        data: [],
-      });
-    }
     res.status(200).json({
       success: true,
       data: coursesList,

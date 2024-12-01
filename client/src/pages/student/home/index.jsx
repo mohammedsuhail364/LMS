@@ -70,7 +70,7 @@ function StudentHomePage() {
               </div>
             ))
           ) : (
-            <h1>No Course Found</h1>
+            <h1 className="text-5xl">No Course Found</h1>
           )}
         </div>
       </section>
