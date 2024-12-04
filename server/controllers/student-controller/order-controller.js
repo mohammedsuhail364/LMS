@@ -12,7 +12,7 @@ const createOrder = async (req, res) => {
       orderStatus,
       paymentMethod,
       paymentStatus,
-      orderState,
+      orderDate,
       paymentId,
       payerId,
       instructorId,
@@ -67,7 +67,7 @@ const createOrder = async (req, res) => {
           orderStatus,
           paymentMethod,
           paymentStatus,
-          orderState,
+          orderDate,
           paymentId,
           payerId,
           instructorId,
@@ -101,7 +101,8 @@ const createOrder = async (req, res) => {
 const capturePaymentAndFinalizeOrder = async (req, res) => {
   try {
     const { paymentId, payerId, orderId } = req.body;
-    let order = await Order.find(orderId);
+
+    let order = await Order.findOne({ _id: orderId });
     if (!order) {
       return res.status(404).json({
         success: false,
@@ -113,13 +114,64 @@ const capturePaymentAndFinalizeOrder = async (req, res) => {
     order.paymentId = paymentId;
     order.payerId = payerId;
     await order.save();
-    // upda
 
+    // update out student course model
+
+    const studentCourses = await StudentCourses.findOne({
+      userId: order.userId,
+    });
+    if (studentCourses) {
+      studentCourses.courses.push({
+        courseId: order.courseId,
+        title: order.courseTitle,
+        instructorId: order.instructorId,
+        instructorName: order.instructorName,
+        dateOfPurchase: order.orderDate,
+        courseImage: order.courseImage,
+      });
+      await studentCourses.save();
+    } else {
+      const newStudentCourses = new StudentCourses({
+        userId: order.userId,
+        courses: [
+          {
+            courseId: order.courseId,
+            title: order.courseTitle,
+            instructorId: order.instructorId,
+            instructorName: order.instructorName,
+            dateOfPurchase: order.orderDate,
+            courseImage: order.courseImage,
+          },
+        ],
+      });
+
+      await newStudentCourses.save();
+    }
+
+    //  update the course Schema students
+    
+    
+    await Course.findByIdAndUpdate(order.courseId, {
+      $addToSet: {
+        students: {
+          studentId: order.userId,
+          studentName: order.userName,
+          studentEmail: order.userEmail,
+          paidAmount: order.coursePricing,
+        },
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Order Confirmed",
+      data: order,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({
       success: false,
-      message: "Some error occured!",
+      message:error.stack,
     });
   }
 };
