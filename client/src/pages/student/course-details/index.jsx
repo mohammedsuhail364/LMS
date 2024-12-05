@@ -9,7 +9,7 @@ import {
 } from "@/services";
 import { CheckCircle, Globe, Lock, PlayCircle } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { Navigate, useLocation, useParams } from "react-router-dom";
 import {
   Dialog,
   DialogClose,
@@ -36,6 +36,7 @@ function StudentViewCourseDetailsPage() {
   const [approvalUrl, setApprovalUrl] = useState('');
   const [displayCurrentVideoFreePreview, setDisplayCurrentVideoFreePreview] =
     useState(null);
+  const [coursePurchaseId, setCoursePurchaseId] = useState(null);
   const getIndexOfFreePreviewUrl =
     studentViewCourseDetails !== null
       ? studentViewCourseDetails.curriculam.findIndex(
@@ -44,13 +45,15 @@ function StudentViewCourseDetailsPage() {
       : -1;
   async function fetchStudentViewCourseDetails() {
     const response = await fetchStudentViewCourseDetailsService(
-      currentCourseDetailsId
+      currentCourseDetailsId,auth.user._id
     );
     if (response.success) {
       setStudentViewCourseDetails(response.data);
+      setCoursePurchaseId(response.coursePurchaseId)
       setLoadingState(false);
     } else {
       setStudentViewCourseDetails(null);
+      setCoursePurchaseId(null);
       setLoadingState(false);
     }
   }
@@ -97,6 +100,7 @@ function StudentViewCourseDetailsPage() {
   useEffect(() => {
     if (!location.pathname.includes("courses/details"))
       setStudentViewCourseDetails(null), setCurrentCourseDetailsId(null);
+      setCoursePurchaseId(null);
   }, []);
   useEffect(() => {
     if (currentCourseDetailsId !== null) fetchStudentViewCourseDetails();
@@ -108,7 +112,9 @@ function StudentViewCourseDetailsPage() {
   if (loadingState || !studentViewCourseDetails) {
     return <Skeleton />;
   }
-
+  if(coursePurchaseId !==null){
+    return <Navigate to={`/course-progress/${coursePurchaseId}`}/>
+  }
   if (approvalUrl !== "") {
     window.location.href = approvalUrl;
   }

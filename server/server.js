@@ -7,6 +7,7 @@ const mediaRoutes = require("./routes/instructor-routes/mediaRoutes");
 const instructorCourseRoutes = require("./routes/instructor-routes/courseRoutes");
 const getStudentViewCourseRoutes=require('./routes/student-routes/course-routes');
 const studentViewOrderRoutes=require('./routes/student-routes/order-routes');
+const studentCoursesRoutes=require('./routes/student-routes/student-courses-routes');
 
 
 const app = express();
@@ -41,6 +42,7 @@ app.use('/media',mediaRoutes)
 app.use('/instructor/course',instructorCourseRoutes)
 app.use('/student/course',getStudentViewCourseRoutes);
 app.use('/student/order',studentViewOrderRoutes);
+app.use('/student/courses-bought',studentCoursesRoutes);
 
 
 
