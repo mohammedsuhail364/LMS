@@ -11,8 +11,9 @@ import {
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { filterOptions, sortOptions } from "@/config";
+import { AuthContext } from "@/context/auth-context";
 import { StudentContext } from "@/context/student-context";
-import { fetchStudentViewCourseListService } from "@/services";
+import { checkCoursePurchaseInfoService, fetchStudentViewCourseListService } from "@/services";
 import { ArrowUpDownIcon } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -22,6 +23,7 @@ function StudentViewCoursesPage() {
   const [filter, setFilter] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate=useNavigate();
+  const {auth}=useContext(AuthContext);
   const {
     studentViewCoursesList,
     setStudentViewCoursesList,
@@ -80,6 +82,17 @@ function StudentViewCoursesPage() {
       }
     }
     return queryParams.join("&");
+  }
+  async function handleCourseNavigate(getCurrentCourseId) {
+    const response=await checkCoursePurchaseInfoService(getCurrentCourseId,auth.user._id);
+    if(response.success){
+      if(response.data){
+        navigate(`/course-progress/${getCurrentCourseId}`);
+      }
+      else{
+        navigate(`/courses/details/${getCurrentCourseId}`)
+      }
+    }
   }
   useEffect(() => {
     const buildQueryStringForFilters = createSearchParamsHelper(filter);
@@ -176,7 +189,7 @@ function StudentViewCoursesPage() {
             {loadingState && <Skeleton />}
             {studentViewCoursesList && studentViewCoursesList.length > 0 ? (
               studentViewCoursesList.map((courseItem) => (
-                <Card onClick={()=>navigate(`/courses/details/${courseItem._id}`)} key={courseItem._id} className="cursor-pointer">
+                <Card onClick={()=>handleCourseNavigate(courseItem._id)} key={courseItem._id} className="cursor-pointer">
                   <CardContent className=" flex gap-4 p-4 ">
                     <div className=" w-48 h-32 flex-shrink-0">
                       <img
