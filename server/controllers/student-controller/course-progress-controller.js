@@ -5,6 +5,24 @@ const StudentCourses = require("../../models/StudentCourses");
 // mark current lecture as viewed
 const markCurrentLectureAsViewed = async (req, res) => {
   try {
+    const {userId,courseId,lectureId}=req.body;
+    let progress=await CourseProgress.find({userId,courseId});
+    if(!progress){
+      progress=new CourseProgress({
+        userId,
+        courseId,
+        lecturesProgress:[{
+          lectureId,
+          viewed:true,
+          dateViewed:new Date()
+        }]
+      })
+      await progress.save();
+      
+    }
+    else{
+
+    }
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -58,7 +76,6 @@ const getCurrentCourseProgress = async (req, res) => {
           courseDetails: course,
           progress: [],
           isPurchased: true,
-          
         },
       });
     }
