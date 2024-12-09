@@ -13,12 +13,10 @@ export default function AuthProvider({ children }) {
   });
   const [loading, setLoading] = useState(true);
   async function handleRegisterUser(event) {
-    setSignUpFormData(initialSignUpFormData);
     event.preventDefault();
     const data = await registerService(signUpFormData);
   }
   async function handleLoginUser(event) {
-    setSignInFormData(initialSignInFormData);
     event.preventDefault();
     const data = await loginService(signInFormData);
     if (data.success) {

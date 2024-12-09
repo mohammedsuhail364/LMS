@@ -18,7 +18,7 @@ const MONGO_URI = process.env.MONGO_URI;
 
 app.use(
     cors({
-      origin:['http://localhost:5173', "https://lms-j8i4.onrender.com"],
+      origin:['http://localhost:5173', "https://lms-j8i4.onrender.com","https://mohammedsuhail364.github.io/LMSClient/"],
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
       credentials: true,
     })

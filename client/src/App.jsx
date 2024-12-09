@@ -76,7 +76,7 @@ function App() {
         <Route path="student-courses" element={<StudentCoursesPage/>}/>
         <Route path="course-progress/:id" element={<StudentViewCourseProgressPage/>}/>
       </Route>
-      <Route path="*" element={<NotFoundPage/>}/>
+      <Route path="*" element={<AuthPage/>}/>
     </Routes>
   );
 }
