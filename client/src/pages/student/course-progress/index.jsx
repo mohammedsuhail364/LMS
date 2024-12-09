@@ -71,14 +71,14 @@ function StudentViewCourseProgressPage() {
   }
   async function updateCourseProgress() {
     if (currentLecture) {
-      console.log(currentLecture._id);
+      // console.log(currentLecture._id);
       
       const response = await markLectureAsViewedService(
         auth?.user?._id,
         studentCurrentCourseProgress?.courseDetails?._id,
         currentLecture._id
       );
-      console.log(response, "res");
+      // console.log(response, "res");
 
       if (response?.success) {
         fetchCurrentCourseProgress();

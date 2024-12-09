@@ -8,8 +8,11 @@ function StudentViewCommonHeader() {
   const navigate=useNavigate()
     const {resetCredentials}=useContext(AuthContext);
     function handleLogout() {
+      const confirmed = window.confirm("Are you sure you want to log out?");
+      if (confirmed) {
         resetCredentials();
         sessionStorage.clear();
+      }
     }
   return (
     <header className=" flex items-center justify-between p-4 border-b relative">

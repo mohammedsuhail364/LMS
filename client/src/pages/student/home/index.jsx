@@ -3,12 +3,15 @@ import banner from "../../../../public/banner-img.png";
 import { Button } from "@/components/ui/button";
 import { useContext, useEffect } from "react";
 import { StudentContext } from "@/context/student-context";
-import { checkCoursePurchaseInfoService, fetchStudentViewCourseListService } from "@/services";
+import {
+  checkCoursePurchaseInfoService,
+  fetchStudentViewCourseListService,
+} from "@/services";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "@/context/auth-context";
 function StudentHomePage() {
-  const navigate=useNavigate();
-  const {auth}=useContext(AuthContext);
+  const navigate = useNavigate();
+  const { auth } = useContext(AuthContext);
   const { studentViewCoursesList, setStudentViewCoursesList } =
     useContext(StudentContext);
   async function fetchAllStudentViewCourses() {
@@ -16,15 +19,26 @@ function StudentHomePage() {
     if (response.success) setStudentViewCoursesList(response.data);
   }
   async function handleCourseNavigate(getCurrentCourseId) {
-    const response=await checkCoursePurchaseInfoService(getCurrentCourseId,auth.user._id);
-    if(response.success){
-      if(response.data){
+    const response = await checkCoursePurchaseInfoService(
+      getCurrentCourseId,
+      auth.user._id
+    );
+    if (response.success) {
+      if (response.data) {
         navigate(`/course-progress/${getCurrentCourseId}`);
-      }
-      else{
-        navigate(`/courses/details/${getCurrentCourseId}`)
+      } else {
+        navigate(`/courses/details/${getCurrentCourseId}`);
       }
     }
+  }
+  function handleNavigateToCoursesPage(getCurrentId) {
+    // console.log(getCurrentId);
+    sessionStorage.removeItem("filters");
+    const currentFilter = {
+      category: [getCurrentId],
+    };
+    sessionStorage.setItem("filters", JSON.stringify(currentFilter));
+    navigate("/courses");
   }
   useEffect(() => {
     fetchAllStudentViewCourses();
@@ -55,6 +69,7 @@ function StudentHomePage() {
               className="justify-start"
               variant="outline"
               key={categoryItem.id}
+              onClick={() => handleNavigateToCoursesPage(categoryItem.id)}
             >
               {categoryItem.label}
             </Button>
@@ -67,7 +82,7 @@ function StudentHomePage() {
           {studentViewCoursesList && studentViewCoursesList.length > 0 ? (
             studentViewCoursesList.map((courseItem, index) => (
               <div
-              onClick={()=>handleCourseNavigate(courseItem?._id)}
+                onClick={() => handleCourseNavigate(courseItem?._id)}
                 key={index}
                 className=" border rounded-lg overflow-hidden shadow cursor-pointer"
               >
@@ -78,9 +93,11 @@ function StudentHomePage() {
                   className=" w-full h-40 object-cover "
                 />
                 <div className="p-4">
-                    <h3 className=" font-bold mb-2" > {courseItem.title}</h3>
-                    <p className=" text-sm text-gray-700 mb-2">{courseItem.instructorName}</p>
-                    <p className="font-bold text-[16px]">${courseItem.pricing}</p>
+                  <h3 className=" font-bold mb-2"> {courseItem.title}</h3>
+                  <p className=" text-sm text-gray-700 mb-2">
+                    {courseItem.instructorName}
+                  </p>
+                  <p className="font-bold text-[16px]">${courseItem.pricing}</p>
                 </div>
               </div>
             ))

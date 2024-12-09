@@ -8,7 +8,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { courseCurriculumInitialFormData, courseLandingInitialFormData } from "@/config";
+import {
+  courseCurriculumInitialFormData,
+  courseLandingInitialFormData,
+} from "@/config";
 import { InstructorContext } from "@/context/instructor-context";
 import { Delete, Edit } from "lucide-react";
 import { useContext } from "react";
@@ -16,11 +19,11 @@ import { useNavigate } from "react-router-dom";
 
 function InstructorCourses({ listOfCourses }) {
   const navigate = useNavigate();
-  const{
+  const {
     setCourseLandingFormData,
     setCurrentEditedCourseId,
-    setCourseCurriculamFormData
-  }=useContext(InstructorContext);
+    setCourseCurriculamFormData,
+  } = useContext(InstructorContext);
   return (
     <Card>
       <CardHeader className=" flex justify-between flex-row items-center">
@@ -28,12 +31,10 @@ function InstructorCourses({ listOfCourses }) {
         <Button
           onClick={() => {
             setCurrentEditedCourseId(null);
-            setCourseLandingFormData(courseLandingInitialFormData)
+            setCourseLandingFormData(courseLandingInitialFormData);
             setCourseCurriculamFormData(courseCurriculumInitialFormData);
-            navigate("/instructor/create-new-course")
-          }
-          }
-          
+            navigate("/instructor/create-new-course");
+          }}
           className="p-6"
         >
           Create New Course
@@ -58,7 +59,9 @@ function InstructorCourses({ listOfCourses }) {
                         {course.title}
                       </TableCell>
                       <TableCell>{course.students.length}</TableCell>
-                      <TableCell>${course.pricing}</TableCell>
+                      <TableCell>
+                        ${course.students.length * course.pricing}
+                      </TableCell>
                       <TableCell className="text-right">
                         <Button
                           onClick={() => {
@@ -69,9 +72,9 @@ function InstructorCourses({ listOfCourses }) {
                         >
                           <Edit className="h-6 w-6" />
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        {/* <Button variant="ghost" size="sm">
                           <Delete className="h-6 w-6" />
-                        </Button>
+                        </Button> */}
                       </TableCell>
                     </TableRow>
                   ))

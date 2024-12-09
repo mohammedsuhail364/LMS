@@ -69,7 +69,7 @@ function StudentViewCourseDetailsPage() {
   }
 
   function handleSetFreePreview(getCurrentVideoInfo) {
-    console.log(getCurrentVideoInfo);
+    // console.log(getCurrentVideoInfo);
     setDisplayCurrentVideoFreePreview(getCurrentVideoInfo.videoUrl);
   }
 

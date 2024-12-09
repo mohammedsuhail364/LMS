@@ -26,7 +26,7 @@ function CourseSettings() {
           imageFormData,
           setMediaUploadProgressPercentage
         );
-        console.log(response);
+        // console.log(response);
         if (response.success) {
           setCourseLandingFormData({
             ...courseLandingFormData,

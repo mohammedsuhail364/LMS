@@ -114,7 +114,7 @@ function StudentViewCoursesPage() {
       sessionStorage.removeItem("filters");
     };
   }, []);
-  console.log(filter);
+  // console.log(filter);
 
   return (
     <div className=" container mx-auto p-4">

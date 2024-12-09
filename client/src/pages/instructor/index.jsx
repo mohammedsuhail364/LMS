@@ -15,7 +15,6 @@ function InstructorDashboardPage() {
     useContext(InstructorContext);
   async function fetchAllCourses() {
     const response = await fetchInstructorCourseListService();
-    // console.log(response);
     if(response.success) setInstructorCoursesList(response.data)
     
   }
@@ -27,7 +26,7 @@ function InstructorDashboardPage() {
       icon: BarChart,
       label: "Dashboard",
       value: "dashboard",
-      component: <InstructorDashboard />,
+      component: <InstructorDashboard listOfCourses={instructorCoursesList}  />,
     },
     {
       icon: Book,
@@ -43,8 +42,11 @@ function InstructorDashboardPage() {
     },
   ];
   function handleLogout() {
-    resetCredentials();
-    sessionStorage.clear();
+    const confirmed = window.confirm("Are you sure you want to log out?");
+    if (confirmed) {
+      resetCredentials();
+      sessionStorage.clear();
+    }
   }
   return (
     <div className=" flex h-full min-h-screen bg-green-100">
