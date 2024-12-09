@@ -15,21 +15,14 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 const MONGO_URI = process.env.MONGO_URI;
-const allowedOrigins = ["http://localhost:5173", "https://lms-j8i4.onrender.com"];
 
-app.use(cors({
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error("Not allowed by CORS"));
-        }
-    },
-    credentials: true, // Allow cookies and authorization headers
-}));
-
-// Ensure preflight requests are handled
-app.options("*", cors());
+app.use(
+    cors({
+      origin:['http://localhost:5173', "https://lms-j8i4.onrender.com"],
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+      credentials: true,
+    })
+  );
 
 app.use(express.json());
 
