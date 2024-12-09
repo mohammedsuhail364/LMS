@@ -3,14 +3,28 @@ import banner from "../../../../public/banner-img.png";
 import { Button } from "@/components/ui/button";
 import { useContext, useEffect } from "react";
 import { StudentContext } from "@/context/student-context";
-import { fetchStudentViewCourseListService } from "@/services";
+import { checkCoursePurchaseInfoService, fetchStudentViewCourseListService } from "@/services";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "@/context/auth-context";
 function StudentHomePage() {
-  
+  const navigate=useNavigate();
+  const {auth}=useContext(AuthContext);
   const { studentViewCoursesList, setStudentViewCoursesList } =
     useContext(StudentContext);
   async function fetchAllStudentViewCourses() {
     const response = await fetchStudentViewCourseListService();
     if (response.success) setStudentViewCoursesList(response.data);
+  }
+  async function handleCourseNavigate(getCurrentCourseId) {
+    const response=await checkCoursePurchaseInfoService(getCurrentCourseId,auth.user._id);
+    if(response.success){
+      if(response.data){
+        navigate(`/course-progress/${getCurrentCourseId}`);
+      }
+      else{
+        navigate(`/courses/details/${getCurrentCourseId}`)
+      }
+    }
   }
   useEffect(() => {
     fetchAllStudentViewCourses();
@@ -53,6 +67,7 @@ function StudentHomePage() {
           {studentViewCoursesList && studentViewCoursesList.length > 0 ? (
             studentViewCoursesList.map((courseItem, index) => (
               <div
+              onClick={()=>handleCourseNavigate(courseItem?._id)}
                 key={index}
                 className=" border rounded-lg overflow-hidden shadow cursor-pointer"
               >

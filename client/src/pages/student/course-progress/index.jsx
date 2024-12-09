@@ -11,15 +11,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import VideoPlayer from "@/components/video-player";
 import { AuthContext } from "@/context/auth-context";
 import { StudentContext } from "@/context/student-context";
-import { getCurrentCourseProgressService } from "@/services";
+import {
+  getCurrentCourseProgressService,
+  markLectureAsViewedService,
+  resetCourseProgressService,
+} from "@/services";
 import { DialogDescription } from "@radix-ui/react-dialog";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import Confetti from "react-confetti";
 import { useNavigate, useParams } from "react-router-dom";
 
 function StudentViewCourseProgressPage() {
-  const navigate = useNavigate();
   const { auth } = useContext(AuthContext);
   const { studentCurrentCourseProgress, setStudentCurrentCourseProgress } =
     useContext(StudentContext);
@@ -29,34 +32,84 @@ function StudentViewCourseProgressPage() {
   const [showCourseCompleteDialog, setShowCourseCompleteDialog] =
     useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
-  const [isSideBarOpen, setIsSideBarOpen] = useState(false);
+  const [isSideBarOpen, setIsSideBarOpen] = useState(true);
+  const navigate=useNavigate();
   async function fetchCurrentCourseProgress() {
     const response = await getCurrentCourseProgressService(auth.user._id, id);
-    if (!response.data.isPurchased) {
-      setLockCourse(true);
-    } else {
-      setStudentCurrentCourseProgress({
-        courseDetails: response.data.courseDetails,
-        progress: response.data.progress,
-      });
-      if (response.data.completed) {
-        setCurrentLecture[response.data.courseDetails.curriculam[0]];
-        setShowCourseCompleteDialog(true);
-        setShowConfetti(true);
-        return;
-      }
-      if (response?.data?.progress.length === 0) {
-        setCurrentLecture(response?.data?.courseDetails?.curriculam[0]);
+    if (response.success) {
+      if (!response.data.isPurchased) {
+        setLockCourse(true);
       } else {
-        // later
+        setStudentCurrentCourseProgress({
+          courseDetails: response?.data?.courseDetails,
+          progress: response?.data?.progress,
+        });
+        if (response?.data?.completed) {
+          setCurrentLecture(response?.data?.courseDetails?.curriculam[0]);
+          setShowCourseCompleteDialog(true);
+          setShowConfetti(true);
+          return;
+        }
+        if (response?.data?.progress?.length === 0) {
+          setCurrentLecture(response?.data?.courseDetails?.curriculam[0]);
+        } else {
+          const lastIndexOfViewedAsTrue = response?.data?.progress.reduceRight(
+            (acc, obj, index) => {
+              return acc === -1 && obj.viewed ? index : acc;
+            },
+            -1
+          );
+
+          setCurrentLecture(
+            response?.data?.courseDetails?.curriculam[
+              lastIndexOfViewedAsTrue + 1
+            ]
+          );
+        }
       }
+    }
+  }
+  async function updateCourseProgress() {
+    if (currentLecture) {
+      console.log(currentLecture._id);
+      
+      const response = await markLectureAsViewedService(
+        auth?.user?._id,
+        studentCurrentCourseProgress?.courseDetails?._id,
+        currentLecture._id
+      );
+      console.log(response, "res");
+
+      if (response?.success) {
+        fetchCurrentCourseProgress();
+      }
+    }
+  }
+
+  async function handleRewatchCourse() {
+    const response=await resetCourseProgressService(auth?.user?._id,studentCurrentCourseProgress?.courseDetails?._id);
+    if(response?.success){
+      setCurrentLecture(null);
+      setShowConfetti(false);
+      setShowCourseCompleteDialog(false);
+      fetchCurrentCourseProgress()
     }
   }
   useEffect(() => {
     fetchCurrentCourseProgress();
   }, [id]);
-  console.log(currentLecture);
-  
+  useEffect(() => {
+    if (currentLecture?.progressValue === 1) {
+      updateCourseProgress();
+    }
+  }, [currentLecture]);
+
+  useEffect(()=>{
+    if(showCourseCompleteDialog){
+      setCurrentLecture(null);
+    }
+  },[showCourseCompleteDialog])
+
   return (
     <div className=" flex flex-col h-screen bg-[#1c1d1f] text-white">
       {showConfetti && <Confetti />}
@@ -104,7 +157,7 @@ function StudentViewCourseProgressPage() {
           </div>
         </div>
         <div
-          className={`fixed top-[64px] right-0 bottom-0 w-[400px] bg-[#1c1d1f] border-l border-gray-700 transition-all duration-300 ${
+          className={`fixed top-[68px] right-0 bottom-0 w-[400px] bg-[#1c1d1f] border-l border-gray-700 transition-all duration-300 ${
             isSideBarOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
@@ -132,6 +185,9 @@ function StudentViewCourseProgressPage() {
                         key={item._id}
                         className=" flex items-center space-x-2 text-sm text-white font-bold cursor-pointer"
                       >
+                        {
+                          studentCurrentCourseProgress?.progress?.find(progressItem=>progressItem.lectureId===item._id)?.viewed?<Check className=" h-4 w-4 text-green-600"/>:<Play  className=" h-4 w-4 "/>
+                        }
                         <span>{item?.title} </span>
                       </div>
                     )
@@ -163,6 +219,7 @@ function StudentViewCourseProgressPage() {
           </DialogHeader>
         </DialogContent>
       </Dialog>
+      
       <Dialog open={showCourseCompleteDialog}>
         <DialogContent className=" sm:w-[425px]">
           <DialogHeader>
@@ -170,8 +227,8 @@ function StudentViewCourseProgressPage() {
             <DialogDescription className=" flex flex-col gap-3">
               <Label>You Have Completed the course</Label>
               <div className="flex flex-row gap-3">
-                <Button>My Course Page</Button>
-                <Button>Rewatch Course</Button>
+                <Button onClick={()=>navigate('/student-courses')}>My Course Page</Button>
+                <Button onClick={handleRewatchCourse}>Rewatch Course</Button>
               </div>
             </DialogDescription>
           </DialogHeader>
