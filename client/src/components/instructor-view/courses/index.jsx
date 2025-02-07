@@ -13,7 +13,7 @@ import {
   courseLandingInitialFormData,
 } from "@/config";
 import { InstructorContext } from "@/context/instructor-context";
-import { Delete, Edit } from "lucide-react";
+import {  Edit } from "lucide-react";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 

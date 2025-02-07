@@ -2,6 +2,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { initialSignInFormData, initialSignUpFormData } from "@/config";
 import { checkAuthService, loginService, registerService } from "@/services";
 import { createContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 export const AuthContext = createContext(null);
 
 export default function AuthProvider({ children }) {
@@ -11,19 +13,27 @@ export default function AuthProvider({ children }) {
     authenticate: false,
     user: null,
   });
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   async function handleRegisterUser(event) {
     event.preventDefault();
-    const data = await registerService(signUpFormData);
+    const response = await registerService(signUpFormData);
+
+    if (response.success) {
+      navigate("/home");
+    }
   }
   async function handleLoginUser(event) {
     event.preventDefault();
     const data = await loginService(signInFormData);
+    console.log(data);
+
     if (data.success) {
       sessionStorage.setItem(
         "accessToken",
         JSON.stringify(data.data.accessToken)
       );
+
       setAuth({
         authenticate: true,
         user: data.data.user,
@@ -82,7 +92,7 @@ export default function AuthProvider({ children }) {
         handleRegisterUser,
         handleLoginUser,
         auth,
-        resetCredentials
+        resetCredentials,
       }}
     >
       {loading ? <Skeleton /> : children}

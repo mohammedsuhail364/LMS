@@ -19,6 +19,7 @@ export async function loginService(formData) {
     });
     return data;
   } catch (error) {
+    alert('check you email or password')
     console.log("Error in registerService:", error.message || error);
     throw error;
   }
