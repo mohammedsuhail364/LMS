@@ -77,7 +77,7 @@ Copy
 npm run dev
 🌐 Live Demo
 Check out the live demo of the LMS:
-👉 https://lms-pearl-eight.vercel.app/
+👉 https://lms-omega-rosy.vercel.app/
 
 Note: If the page doesn't load immediately, refresh once (due to the free server).
 
