@@ -26,8 +26,6 @@ export default function AuthProvider({ children }) {
   async function handleLoginUser(event) {
     event.preventDefault();
     const data = await loginService(signInFormData);
-    console.log(data);
-
     if (data.success) {
       sessionStorage.setItem(
         "accessToken",
