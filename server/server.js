@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+
 const authRoutes = require("./routes/auth-routes");
 const mediaRoutes = require("./routes/instructor-routes/mediaRoutes");
 const instructorCourseRoutes = require("./routes/instructor-routes/courseRoutes");
@@ -12,48 +13,35 @@ const studentCourseProgressRoutes = require("./routes/student-routes/course-prog
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
 const MONGO_URI = process.env.MONGO_URI;
 
-// app.use(
-//   cors({
-//     origin: [
-//       "http://localhost:5173",
-//       "https://lms-j8i4.onrender.com",
-//       "https://bright-path-nu.vercel.app",
-//     ],
-//     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-//     credentials: true,
-//   })
-// );
-app.use((req, res, next) => {
-  res.header(
-    "Access-Control-Allow-Origin",
-    "https://lms-omega-rosy.vercel.app"
-  );
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.header("Access-Control-Allow-Credentials", "true");
-  next();
-});
+/* ✅ Use proper cors config */
+const corsOptions = {
+  origin: "https://lms-omega-rosy.vercel.app", // allow your Vercel frontend
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  credentials: true,
+};
+app.use(cors(corsOptions));
 
+/* ✅ Parse JSON */
 app.use(express.json());
 
+/* ✅ Error handling */
 app.use((err, req, res, next) => {
-  console.log(err.stack);
+  console.error(err.stack);
   res.status(500).json({
     success: false,
     message: "Something went wrong",
   });
 });
-// Database connection
+
+/* ✅ Database connection */
 mongoose
   .connect(MONGO_URI)
-  .then(() => console.log("mongodb is connected successfully"))
-  .catch((e) => console.log(e));
+  .then(() => console.log("MongoDB connected successfully"))
+  .catch((e) => console.error(e));
 
-// routes configuration
-
+/* ✅ Routes */
 app.use("/auth", authRoutes);
 app.use("/media", mediaRoutes);
 app.use("/instructor/course", instructorCourseRoutes);
@@ -62,6 +50,7 @@ app.use("/student/order", studentViewOrderRoutes);
 app.use("/student/courses-bought", studentCoursesRoutes);
 app.use("/student/course-progress", studentCourseProgressRoutes);
 
+/* ✅ Start server */
 app.listen(PORT, () => {
-  console.log(`Server is now running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
