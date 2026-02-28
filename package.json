@@ -1,0 +1,22 @@
+{
+  "name": "lms",
+  "version": "1.0.0",
+  "description": "Learning Management System (LMS)🎓 Welcome to the Learning Management System (LMS), a feature-rich platform built with the MERN stack (MongoDB, Express.js, React, Node.js) and styled with shadcn/ui. This LMS is designed to provide a seamless learning experience, allowing users to enroll in courses, manage their progress, and make secure payments via PayPal integration. Whether you're an admin, instructor, or student, this platform caters to all your educational needs.",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm install --prefix server && npm install --include=dev --prefix client && npm run build --prefix client",
+    "start": "npm run start --prefix server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mohammedsuhail364/LMS.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mohammedsuhail364/LMS/issues"
+  },
+  "homepage": "https://github.com/mohammedsuhail364/LMS#readme"
+}
+

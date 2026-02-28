@@ -14,7 +14,6 @@ const studentCoursesRoutes = require("./routes/student-routes/student-courses-ro
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
-const __dirname = path.resolve();
 
 /* ✅ Use proper cors config */
 const corsOptions = {

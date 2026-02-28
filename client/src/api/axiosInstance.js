@@ -1,6 +1,6 @@
 import axios from "axios";
 const axiosInstance = axios.create({
-  baseURL:"https://lms-rugc.onrender.com",
+  baseURL:import.meta.env.VITE_SERVER_URL,
   headers: {
     "Content-Type": "application/json",
   },
